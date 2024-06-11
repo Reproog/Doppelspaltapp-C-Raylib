@@ -27,8 +27,6 @@ void DrawKugelwelle(int x, int y, int breite, int hoehe, AppState* state, Color 
 
     for (int i = 0; i * state->lambda + s0 < breite; i++) {
         int radius = i * state->lambda + s0;
-        int xOffset = x - radius;
-        int yOffset = y - radius;
 
         if (radius > s0) {
             DrawCircleLines(x, y, radius, color);
