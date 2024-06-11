@@ -269,48 +269,25 @@ int main(void) {
     float valueD = 75;
     float valueWinkel = 90;
 
+    // Define the height of the window box and sliders
+    int windowBoxHeight = GetScreenHeight() / 8 ;
+    int sliderHeight = GetScreenHeight() / 50;
+    int sliderSpacing = GetScreenHeight() / 100; 
+    int sliderBeginY = GetScreenHeight() / 20;
+    int displayText = GetScreenHeight() / 25;
+    int Scale = GetScreenHeight() / 3;
 
 
     SetTargetFPS(60);
+
     while (!WindowShouldClose()) {
-             
-
-        // Define the height of the window box and sliders 
-        /*
-        int windowBoxHeight = GetScreenHeight() / 8;
-        int sliderSpacing = GetScreenHeight() / 100; 
-        int sliderHeight = GetScreenHeight() / 50;
-        int sliderBeginY = GetScreenHeight() / 20;
-        int displayText = GetScreenHeight() / 25;
-
-        */
-
-
-        // Define the height of the window box
-        int windowBoxHeight = GetScreenWidth() / 8;
-
-        // Define ratios based on the provided values
-        float ratioSpacing = 10.0f / 121.0f;        // Ratio for slider spacing
-        float ratioHeight = 20.0f / 121.0f;        // Ratio for slider height
-        float ratioBeginY = 40.0f / 121.0f;        // Ratio for slider Y position
-        float ratioDisplayText = 40.0f / 121.0f;   // Ratio for display text width
-
-        // Calculate values based on windowBoxHeight
-        int sliderHeight = (int)(ratioHeight * windowBoxHeight);
-        int sliderSpacing = (int)(ratioSpacing * windowBoxHeight);
-        int displayText = (int)(ratioDisplayText * windowBoxHeight);
-        int sliderBeginY = (int)(ratioBeginY * windowBoxHeight);
-
-
-
-
 
 
         // Define bounds for the window box (bottom of the screen)
-        Rectangle windowBoxBounds = { 0, GetScreenHeight() - windowBoxHeight, GetScreenWidth() , windowBoxHeight };
+        Rectangle windowBoxBounds = { 0, GetScreenHeight() - windowBoxHeight - sliderHeight, GetScreenWidth() , windowBoxHeight + sliderHeight};
 
         // Define bounds for the sliders inside the window box
-        Rectangle boundsLambda = { sliderBeginY, windowBoxBounds.y , windowBoxBounds.width - displayText - sliderBeginY, sliderHeight };
+        Rectangle boundsLambda = { sliderBeginY, windowBoxBounds.y + 10, windowBoxBounds.width - displayText - sliderBeginY, sliderHeight };
         Rectangle boundsD = { sliderBeginY, boundsLambda.y + sliderHeight + sliderSpacing, windowBoxBounds.width - displayText - sliderBeginY, sliderHeight };
         Rectangle boundsWinkel = { sliderBeginY, boundsD.y + sliderHeight + sliderSpacing, windowBoxBounds.width - displayText - sliderBeginY, sliderHeight };
 
@@ -332,16 +309,11 @@ int main(void) {
             .y = 0,
             .height = GetScreenHeight(),
             .width = GetScreenWidth() / 3,
-
         };
 
-
-
-
-
-
-
         BeginDrawing();
+
+
 
  
         ClearBackground(RAYWHITE);
@@ -355,8 +327,7 @@ int main(void) {
         DrawSinAndWall(GetScreenWidth(), GetScreenHeight(), &state);
 
 
-        DrawRectangleRec(windowBoxBounds, RAYWHITE);
-
+        GuiPanel(windowBoxBounds, "");
 
         boundsLambda.y = windowBoxBounds.y + displayText;
         boundsD.y = boundsLambda.y + sliderHeight + sliderSpacing;
@@ -368,13 +339,7 @@ int main(void) {
         GuiSlider(boundsWinkel, "Winkel", TextFormat("%2.2f", valueWinkel), &valueWinkel, 0, 180);
 
 
-
-        /*
-        if (GetScreenWidth() <= 934 || GetScreenHeight() <= 684)
-        {
-            SetWindowSize(934, 684);
-        }
-        */
+ 
 
         EndDrawing();
     }
