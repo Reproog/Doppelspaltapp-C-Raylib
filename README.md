@@ -9,5 +9,5 @@ gcc nob.c -o nob
 
 ## Overview
 
-![](./preview.png)
+![](preview.png)
 
