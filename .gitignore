@@ -6,4 +6,8 @@ nob.old
 Doppelspaltapp-Linux-x86-64 
 main 
 Makefile 
+*.exe
+*.zip
+include/
+lib/
 

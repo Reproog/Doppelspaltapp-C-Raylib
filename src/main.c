@@ -1,7 +1,8 @@
 // DoppelspaltApp.c
-#include <raylib.h>
-#include <raymath.h>
+#include "raylib.h"
+#include "raymath.h"
 
+#include <stdlib.h>
 #include <assert.h>
 
 typedef struct {
@@ -20,6 +21,9 @@ static int active_id = -1;
 #define SLIDER_GRIP_COLOR LIGHTGRAY
 #define SLIDER_THICKNESS 20.0f
 #define SLIDER_GRIP_SIZE 10.0f
+
+
+#define M_PI 3.14159
 
 // Helper functions for clamping and interpolation
 static float clampf(float value, float min, float max) {
@@ -75,7 +79,6 @@ static void slider(int id, Rectangle bounds, float *value, float min, float max,
 
 
 void DrawKugelwelle(int x, int y, int breite, int hoehe, AppState* state, Color color) {
-    const int apertur = 90;
     int s0;
     double phi = (state->winkel - 90) * PI / 180.0;
 
@@ -329,6 +332,8 @@ int main(void) {
         //int windowBoxHeight = GetScreenWidth() / 8;
         int windowBoxHeight = 150;
 
+
+
         // Define ratios based on the provided values
         float ratioSpacing = 6.0f / windowBoxHeight;        // Ratio for slider spacing
         float ratioHeight = 20.0f / windowBoxHeight;        // Ratio for slider height
@@ -343,6 +348,39 @@ int main(void) {
         int sliderBeginY = (int)(ratioBeginY * windowBoxHeight);
 
 
+    Rectangle windowBoxBounds = {0.0f, (float)(GetScreenHeight() - windowBoxHeight), (float)GetScreenWidth(), (float)windowBoxHeight};
+
+    Rectangle boundsLambda = { (float)sliderBeginY, windowBoxBounds.y, windowBoxBounds.width - (float)displayText - (float)sliderBeginY, (float)(sliderHeight - windowBoxHeight / 3)};
+
+    Rectangle boundsD = { (float)sliderBeginY, boundsLambda.y + (float)sliderHeight + (float)sliderSpacing, windowBoxBounds.width - (float)displayText - (float)sliderBeginY, (float)(sliderHeight - windowBoxHeight / 3)};
+
+    Rectangle boundsWinkel = { (float)sliderBeginY, boundsD.y + (float)sliderHeight + (float)sliderSpacing, windowBoxBounds.width - (float)displayText - (float)sliderBeginY, (float)(sliderHeight - windowBoxHeight / 3)};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*
+
         // Define bounds for the window box (bottom of the screen)
         Rectangle windowBoxBounds = {0, GetScreenHeight() - windowBoxHeight, GetScreenWidth(), windowBoxHeight};
 
@@ -351,7 +389,7 @@ int main(void) {
         Rectangle boundsD = { sliderBeginY, boundsLambda.y + sliderHeight + sliderSpacing, windowBoxBounds.width - displayText - sliderBeginY, sliderHeight - windowBoxHeight / 3 };
         Rectangle boundsWinkel = { sliderBeginY, boundsD.y + sliderHeight + sliderSpacing, windowBoxBounds.width - displayText - sliderBeginY, sliderHeight - windowBoxHeight / 3 };
 
-
+*/
  
         // Werte in AppState aktualisieren
         state.lambda = (int)valueLambda;
@@ -364,6 +402,7 @@ int main(void) {
 
 
 
+        /*
         Rectangle whiteRect = {
             .x = 0,
             .y = 0,
@@ -371,8 +410,12 @@ int main(void) {
             .width = GetScreenWidth() / 3,
 
         };
-
-
+        */
+        Rectangle whiteRect;
+        whiteRect.x = 0;
+        whiteRect.y = 0;
+        whiteRect.height = GetScreenHeight();
+        whiteRect.width = GetScreenWidth() / 3;
 
 
 
