@@ -317,6 +317,7 @@ int main(void) {
     int screenHeight = 9 * 1080 / 10;
 
 
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "Doppelspaltenapp in C - Raylib / Raygui");
 
@@ -331,66 +332,22 @@ int main(void) {
         //int windowBoxHeight = GetScreenWidth() / 8;
         int windowBoxHeight = 150;
 
+        float ratioSpacing = 6.0f / windowBoxHeight;
+        float ratioHeight = 20.0f / windowBoxHeight;
+        float ratioBeginY = 120.0f / windowBoxHeight;
+        float ratioDisplayText = 80.0f / windowBoxHeight;
 
-
-        // Define ratios based on the provided values
-        float ratioSpacing = 6.0f / windowBoxHeight;        // Ratio for slider spacing
-        float ratioHeight = 20.0f / windowBoxHeight;        // Ratio for slider height
-        //float ratioBeginY = 120.0f / windowBoxHeight;       // Ratio for slider Y position
-        float ratioBeginY = 120.0f / windowBoxHeight;       // Ratio for slider Y position
-        float ratioDisplayText = 80.0f / windowBoxHeight;   // Ratio for display text width
-
-        // Calculate values based on windowBoxHeight
         int sliderHeight = (int)(ratioHeight * windowBoxHeight);
         int sliderSpacing = (int)(ratioSpacing * windowBoxHeight);
         int displayText = (int)(ratioDisplayText * windowBoxHeight);
         int sliderBeginY = (int)(ratioBeginY * windowBoxHeight);
 
 
-    Rectangle windowBoxBounds = {0.0f, (float)(GetScreenHeight() - windowBoxHeight), (float)GetScreenWidth(), (float)windowBoxHeight};
+        Rectangle windowBoxBounds = {0.0f, (float)(GetScreenHeight() - windowBoxHeight), (float)GetScreenWidth(), (float)windowBoxHeight};
+        Rectangle boundsLambda = { (float)sliderBeginY, windowBoxBounds.y, windowBoxBounds.width - (float)displayText - (float)sliderBeginY, (float)(sliderHeight - windowBoxHeight / 3)};
+        Rectangle boundsD = { (float)sliderBeginY, boundsLambda.y + (float)sliderHeight + (float)sliderSpacing, windowBoxBounds.width - (float)displayText - (float)sliderBeginY, (float)(sliderHeight - windowBoxHeight / 3)};
+        Rectangle boundsWinkel = { (float)sliderBeginY, boundsD.y + (float)sliderHeight + (float)sliderSpacing, windowBoxBounds.width - (float)displayText - (float)sliderBeginY, (float)(sliderHeight - windowBoxHeight / 3)};
 
-    Rectangle boundsLambda = { (float)sliderBeginY, windowBoxBounds.y, windowBoxBounds.width - (float)displayText - (float)sliderBeginY, (float)(sliderHeight - windowBoxHeight / 3)};
-
-    Rectangle boundsD = { (float)sliderBeginY, boundsLambda.y + (float)sliderHeight + (float)sliderSpacing, windowBoxBounds.width - (float)displayText - (float)sliderBeginY, (float)(sliderHeight - windowBoxHeight / 3)};
-
-    Rectangle boundsWinkel = { (float)sliderBeginY, boundsD.y + (float)sliderHeight + (float)sliderSpacing, windowBoxBounds.width - (float)displayText - (float)sliderBeginY, (float)(sliderHeight - windowBoxHeight / 3)};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /*
-
-        // Define bounds for the window box (bottom of the screen)
-        Rectangle windowBoxBounds = {0, GetScreenHeight() - windowBoxHeight, GetScreenWidth(), windowBoxHeight};
-
-        // Define bounds for the sliders inside the window box
-        Rectangle boundsLambda = { sliderBeginY, windowBoxBounds.y , windowBoxBounds.width - displayText - sliderBeginY, sliderHeight - windowBoxHeight / 3};
-        Rectangle boundsD = { sliderBeginY, boundsLambda.y + sliderHeight + sliderSpacing, windowBoxBounds.width - displayText - sliderBeginY, sliderHeight - windowBoxHeight / 3 };
-        Rectangle boundsWinkel = { sliderBeginY, boundsD.y + sliderHeight + sliderSpacing, windowBoxBounds.width - displayText - sliderBeginY, sliderHeight - windowBoxHeight / 3 };
-
-*/
- 
-        // Werte in AppState aktualisieren
         state.lambda = (int)valueLambda;
         state.gitterD = (int)valueD;
         state.winkel = (int)valueWinkel;
@@ -398,26 +355,13 @@ int main(void) {
 
         screenWidth = GetScreenWidth();
         screenHeight = GetScreenHeight();
+        
 
-
-
-        /*
-        Rectangle whiteRect = {
-            .x = 0,
-            .y = 0,
-            .height = GetScreenHeight(),
-            .width = GetScreenWidth() / 3,
-
-        };
-        */
         Rectangle whiteRect;
         whiteRect.x = 0;
         whiteRect.y = 0;
         whiteRect.height = GetScreenHeight();
         whiteRect.width = GetScreenWidth() / 3;
-
-
-
 
 
         BeginDrawing();
@@ -441,46 +385,13 @@ int main(void) {
         boundsD.y = boundsLambda.y + sliderHeight + sliderSpacing;
         boundsWinkel.y = boundsD.y + sliderHeight + sliderSpacing;
 
-        //GuiSliderBar(Rectangle bounds, const char *textLeft, const char *textRight, float *value, float minValue, float maxValue); // Slider Bar control
-        /*
-        GuiSlider(boundsLambda, "Lambda", TextFormat("%2.2f", valueLambda), &valueLambda, 10, 85);
-        GuiSlider(boundsD, "D", TextFormat("%2.2f", valueD), &valueD, 0, 150);
-        GuiSlider(boundsWinkel, "Winkel", TextFormat("%2.2f", valueWinkel), &valueWinkel, 0, 180);
-
-
-        slider(0, 50, 50, 200, &valueLambda, 10, 85);
-        slider(1, 50, 100, 200, &valueD, 0, 150);
-        slider(2, 50, 150, 200, &valueWinkel, 0, 180);
-
-        kk
-        // Slider-Aufrufe mit Rectangle-Bounds
-        slider(0, boundsLambda.x, boundsLambda.y + boundsLambda.height / 2, boundsLambda.width, &valueLambda, 10, 85);
-        slider(1, boundsD.x, boundsD.y + boundsD.height / 2, boundsD.width, &valueD, 0, 150);
-        slider(2, boundsWinkel.x, boundsWinkel.y + boundsWinkel.height / 2, boundsWinkel.width, &valueWinkel, 0, 180);
-        */
-
-        // Zeichnen Sie die Slider
         slider(0, boundsLambda, &valueLambda, 10, 85, "Lambda");   // Slider für "Lambda"
         slider(1, boundsD, &valueD, 0, 150, "D");                  // Slider für "D"
         slider(2, boundsWinkel, &valueWinkel, 0, 180, "Winkel");   // Slider für "Winkel"
 
-
-
-
-
-
-
-        /*
-        if (GetScreenWidth() <= 934 || GetScreenHeight() <= 684)
-        {
-            SetWindowSize(934, 684);
-        }
-        */
-
         EndDrawing();
     }
 
-    // De-Initialization
     CloseWindow();
 
     return 0;
