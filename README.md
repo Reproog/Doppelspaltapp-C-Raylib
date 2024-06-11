@@ -1,6 +1,6 @@
 # Doppelspaltenapp in C 
 
-## Quickstart:
+## Quickstart Linux:
 
 ```console
 gcc nob.c -o nob
