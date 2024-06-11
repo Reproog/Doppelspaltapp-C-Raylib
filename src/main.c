@@ -14,24 +14,6 @@ typedef struct {
 
 AppState state = {50, 75, 90, 1.5, 40};
 
-
-
-
-void DrawWavesFromSlits(int screenWidth, int screenHeight, AppState* state) {
-    int xSpalt = screenWidth / 3;
-    int ySpalt1 = (screenHeight - state->gitterD) / 2;
-    int ySpalt2 = (screenHeight + state->gitterD) / 2;
-
-    // Calculate the field size similarly to the Java code
-    int sizeFeld = sqrt((screenWidth - xSpalt) * (screenWidth - xSpalt) + screenHeight * screenHeight);
-
-    // Draw waves for the first slit
-    DrawKugelwelle(xSpalt, ySpalt1, sizeFeld, screenHeight, state, BLUE);
-
-    // Draw waves for the second slit
-    DrawKugelwelle(xSpalt, ySpalt2, sizeFeld, screenHeight, state, GREEN);
-}
-
 void DrawKugelwelle(int x, int y, int breite, int hoehe, AppState* state, Color color) {
     const int apertur = 90;
     int s0;
@@ -54,7 +36,21 @@ void DrawKugelwelle(int x, int y, int breite, int hoehe, AppState* state, Color 
     }
 }
 
+void DrawWavesFromSlits(int screenWidth, int screenHeight, AppState* state) {
+    int xSpalt = screenWidth / 3;
+    int ySpalt1 = (screenHeight - state->gitterD) / 2;
+    int ySpalt2 = (screenHeight + state->gitterD) / 2;
 
+    // Calculate the field size similarly to the Java code
+    int sizeFeld = sqrt((screenWidth - xSpalt) * (screenWidth - xSpalt) + screenHeight * screenHeight);
+
+    // Draw waves for the first slit
+    DrawKugelwelle(xSpalt, ySpalt1, sizeFeld, screenHeight, state, BLUE);
+
+    // Draw waves for the second slit
+    DrawKugelwelle(xSpalt, ySpalt2, sizeFeld, screenHeight, state, GREEN);
+}
+ 
 
 
 void DrawInterferencePoints(int x, int breite, int hoehe, Color color) {
