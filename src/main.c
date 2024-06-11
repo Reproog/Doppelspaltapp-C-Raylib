@@ -22,8 +22,7 @@ static int active_id = -1;
 #define SLIDER_THICKNESS 20.0f
 #define SLIDER_GRIP_SIZE 10.0f
 
-
-#define M_PI 3.14159
+#define M_PI 3.14159265358979323846  /* pi */
 
 // Helper functions for clamping and interpolation
 static float clampf(float value, float min, float max) {
