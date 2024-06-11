@@ -41,14 +41,11 @@ void DrawWavesFromSlits(int screenWidth, int screenHeight, AppState* state) {
     int ySpalt1 = (screenHeight - state->gitterD) / 2;
     int ySpalt2 = (screenHeight + state->gitterD) / 2;
 
-    // Calculate the field size similarly to the Java code
     int sizeFeld = sqrt((screenWidth - xSpalt) * (screenWidth - xSpalt) + screenHeight * screenHeight);
 
-    // Draw waves for the first slit
-    DrawKugelwelle(xSpalt, ySpalt1, sizeFeld, screenHeight, state, BLUE);
+    DrawKugelwelle(xSpalt, ySpalt1, sizeFeld, screenHeight, state, BLACK);
 
-    // Draw waves for the second slit
-    DrawKugelwelle(xSpalt, ySpalt2, sizeFeld, screenHeight, state, GREEN);
+    DrawKugelwelle(xSpalt, ySpalt2, sizeFeld, screenHeight, state, BLACK);
 }
  
 
