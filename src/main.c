@@ -48,11 +48,15 @@ void DrawWavesFromSlits(int screenWidth, int screenHeight, AppState* state) {
  
 
 
-void DrawInterferencePoints(int x, int breite, int hoehe, Color color) {
+void DrawInterferencePoints(int breite, int hoehe, Color color) {
     double phi = (state.winkel - 90) * M_PI / 180.0;
     double s0 = fmod((double) state.gitterD / 2.0 * sin(phi), state.lambda);
     int nWellen = breite / state.lambda;
-    int tempR3 = breite / 80;
+    //int tempR3 = (breite / hoehe) * 10;
+    int tempR3 = 12;
+    if (state.lambda <= 20) tempR3 = 8;
+    if (state.lambda <= 15) tempR3 = 4;
+
     if (tempR3 < 5) tempR3 = 5;
 
     for (int i1 = 0; i1 < nWellen; i1++) {
@@ -65,11 +69,12 @@ void DrawInterferencePoints(int x, int breite, int hoehe, Color color) {
                     double tempY = (tempR1 * tempR1 - tempR2 * tempR2 + state.gitterD * state.gitterD) / (2.0 * state.gitterD);
                     double tempX = sqrt(tempR1 * tempR1 - tempY * tempY);
 
-                    int circleX = x + (int)tempX - tempR3 / 2 + 480;
+                    //int circleX = breite / 16 + (int)tempX - tempR3 / 2 + 480;
+                    int circleX = breite / 3 + (int)tempX;
                     int circleY = (hoehe - state.gitterD) / 2 + ((int)tempY - tempR3 / 2) + 10;
                     //int circleY = centerYBar + (int)tempY - state.lambda / 2;
 
-                    DrawCircle(circleX, circleY, tempR3 / 2, color);
+                    DrawCircle(circleX, circleY, tempR3, color);
                 }
             }
         }
@@ -256,7 +261,7 @@ int main(void) {
     int screenHeight = 9 * 1080 / 10;
 
 
-    //SetConfigFlags(FLAG_WINDOW_RESIZABLE);    // Window configuration flags
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);    // Window configuration flags
     InitWindow(screenWidth, screenHeight, "Doppelspaltenapp in C - Raylib / Raygui");
 
     // Define initial values and bounds for sliders
@@ -309,15 +314,16 @@ int main(void) {
         ClearBackground(RAYWHITE);
 
 
-        DrawWavesFromSlits(screenWidth, screenHeight, &state);
-        DrawInterferencePoints(100, screenWidth - 200, screenHeight, RED);
+        DrawWavesFromSlits(GetScreenWidth(), GetScreenHeight(), &state);
+        //DrawInterferencePoints(GetScreenWidth() / 16, GetScreenWidth(), GetScreenHeight(), RED);
+        DrawInterferencePoints(GetScreenWidth(), GetScreenHeight(), RED);
+
         DrawRectangleRec(whiteRect, RAYWHITE);
         DrawSinAndWall(GetScreenWidth(), GetScreenHeight(), &state);
 
 
         GuiPanel(windowBoxBounds, "");
 
-        // Adjust sliders position relative to the window box
         boundsLambda.y = windowBoxBounds.y + displayText;
         boundsD.y = boundsLambda.y + sliderHeight + sliderSpacing;
         boundsWinkel.y = boundsD.y + sliderHeight + sliderSpacing;
