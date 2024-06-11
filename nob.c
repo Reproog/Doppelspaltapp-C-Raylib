@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     if (!nob_cmd_run_sync(cmd)) return -1;
      
     cmd.count = 0;
-    nob_cmd_append(&cmd, "./bin/main.c");
+    nob_cmd_append(&cmd, "./main");
     if (!nob_cmd_run_sync(cmd)) return -1;
  
     return 0;
