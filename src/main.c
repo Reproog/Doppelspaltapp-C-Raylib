@@ -1,8 +1,8 @@
 // DoppelspaltApp.c
 #include <raylib.h>
+#include <raymath.h>
 
-#define RAYGUI_IMPLEMENTATION
-#include <raygui.h>
+#include <assert.h>
 
 typedef struct {
     int lambda;
@@ -13,6 +13,66 @@ typedef struct {
 } AppState;
 
 AppState state = {50, 75, 90, 1.5, 40};
+
+static int active_id = -1;
+
+#define SLIDER_COLOR DARKGRAY
+#define SLIDER_GRIP_COLOR LIGHTGRAY
+#define SLIDER_THICKNESS 20.0f
+#define SLIDER_GRIP_SIZE 10.0f
+
+// Helper functions for clamping and interpolation
+static float clampf(float value, float min, float max) {
+    return (value < min) ? min : (value > max) ? max : value;
+}
+
+static float ilerpf(float min, float max, float value) {
+    return (value - min) / (max - min);
+}
+
+static float lerpf(float min, float max, float value) {
+    return min + value * (max - min);
+}
+
+
+static void slider(int id, Rectangle bounds, float *value, float min, float max, const char *label) {
+    DrawRectangle(bounds.x, bounds.y + bounds.height * 0.5f - SLIDER_THICKNESS * 0.5f, bounds.width, SLIDER_THICKNESS, SLIDER_COLOR);
+
+    assert(min <= max);
+    float grip_value = ilerpf(min, max, *value) * bounds.width;
+
+    float grip_pos_x = bounds.x - SLIDER_GRIP_SIZE + grip_value;
+    DrawRectangle(grip_pos_x, bounds.y + bounds.height * 0.5f - SLIDER_GRIP_SIZE, SLIDER_GRIP_SIZE * 2.0f, SLIDER_GRIP_SIZE * 2.0f, SLIDER_GRIP_COLOR);
+
+    DrawText(label, bounds.x - 100, bounds.y + bounds.height * 0.5f - 10, 20, DARKGRAY);
+
+    DrawText(TextFormat("%.2f", *value), bounds.x + bounds.width + 10, bounds.y + bounds.height * 0.5f - 10, 20, DARKGRAY);
+
+    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        Vector2 mouse_position = GetMousePosition();
+        if (active_id < 0) {
+            Rectangle grip_rect = {
+                grip_pos_x,
+                bounds.y + bounds.height * 0.5f - SLIDER_GRIP_SIZE,
+                SLIDER_GRIP_SIZE * 2.0f,
+                SLIDER_GRIP_SIZE * 2.0f
+            };
+            if (CheckCollisionPointRec(mouse_position, grip_rect)) {
+                active_id = id;
+            }
+        } else if (active_id == id) {
+            float grip_min = bounds.x - SLIDER_GRIP_SIZE;
+            float grip_max = grip_min + bounds.width;
+            float xf = clampf(mouse_position.x - SLIDER_GRIP_SIZE, grip_min, grip_max);
+            xf = ilerpf(grip_min, grip_max, xf);
+            xf = lerpf(min, max, xf);
+            *value = xf;
+        }
+    } else if (active_id == id) {
+        active_id = -1;
+    }
+}
+
 
 void DrawKugelwelle(int x, int y, int breite, int hoehe, AppState* state, Color color) {
     const int apertur = 90;
@@ -52,7 +112,6 @@ void DrawInterferencePoints(int breite, int hoehe, Color color) {
     double phi = (state.winkel - 90) * M_PI / 180.0;
     double s0 = fmod((double) state.gitterD / 2.0 * sin(phi), state.lambda);
     int nWellen = breite / state.lambda;
-    //int tempR3 = (breite / hoehe) * 10;
     int tempR3 = 12;
     if (state.lambda <= 20) tempR3 = 8;
     if (state.lambda <= 15) tempR3 = 4;
@@ -69,20 +128,16 @@ void DrawInterferencePoints(int breite, int hoehe, Color color) {
                     double tempY = (tempR1 * tempR1 - tempR2 * tempR2 + state.gitterD * state.gitterD) / (2.0 * state.gitterD);
                     double tempX = sqrt(tempR1 * tempR1 - tempY * tempY);
 
-                    //int circleX = breite / 16 + (int)tempX - tempR3 / 2 + 480;
                     int circleX = breite / 3 + (int)tempX;
                     int circleY = (hoehe - state.gitterD) / 2 + ((int)tempY - tempR3 / 2) + 10;
-                    //int circleY = centerYBar + (int)tempY - state.lambda / 2;
 
                     DrawCircle(circleX, circleY, tempR3, color);
+
                 }
             }
         }
     }
 }
-
-
-
 
 void DrawSphericalWave(int x, int y, int width, int height) {
     const int apertur = 90;
@@ -256,44 +311,30 @@ void DrawSinAndWall(int width, int height, AppState* state) {
 
 
 int main(void) {
-    // Initialization
     int screenWidth = 9 * 1920 / 10;
     int screenHeight = 9 * 1080 / 10;
 
 
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);    // Window configuration flags
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "Doppelspaltenapp in C - Raylib / Raygui");
 
-    // Define initial values and bounds for sliders
     float valueLambda = 50;
     float valueD = 75;
     float valueWinkel = 90;
 
-
-
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
-             
-
-        // Define the height of the window box and sliders 
-        /*
-        int windowBoxHeight = GetScreenHeight() / 8;
-        int sliderSpacing = GetScreenHeight() / 100; 
-        int sliderHeight = GetScreenHeight() / 50;
-        int sliderBeginY = GetScreenHeight() / 20;
-        int displayText = GetScreenHeight() / 25;
-
-        */
 
 
-        // Define the height of the window box
-        int windowBoxHeight = GetScreenWidth() / 8;
+        //int windowBoxHeight = GetScreenWidth() / 8;
+        int windowBoxHeight = 150;
 
         // Define ratios based on the provided values
-        float ratioSpacing = 10.0f / 121.0f;        // Ratio for slider spacing
-        float ratioHeight = 20.0f / 121.0f;        // Ratio for slider height
-        float ratioBeginY = 40.0f / 121.0f;        // Ratio for slider Y position
-        float ratioDisplayText = 40.0f / 121.0f;   // Ratio for display text width
+        float ratioSpacing = 6.0f / windowBoxHeight;        // Ratio for slider spacing
+        float ratioHeight = 20.0f / windowBoxHeight;        // Ratio for slider height
+        //float ratioBeginY = 120.0f / windowBoxHeight;       // Ratio for slider Y position
+        float ratioBeginY = 120.0f / windowBoxHeight;       // Ratio for slider Y position
+        float ratioDisplayText = 80.0f / windowBoxHeight;   // Ratio for display text width
 
         // Calculate values based on windowBoxHeight
         int sliderHeight = (int)(ratioHeight * windowBoxHeight);
@@ -302,17 +343,13 @@ int main(void) {
         int sliderBeginY = (int)(ratioBeginY * windowBoxHeight);
 
 
-
-
-
-
         // Define bounds for the window box (bottom of the screen)
-        Rectangle windowBoxBounds = { 0, GetScreenHeight() - windowBoxHeight, GetScreenWidth() , windowBoxHeight };
+        Rectangle windowBoxBounds = {0, GetScreenHeight() - windowBoxHeight, GetScreenWidth(), windowBoxHeight};
 
         // Define bounds for the sliders inside the window box
-        Rectangle boundsLambda = { sliderBeginY, windowBoxBounds.y , windowBoxBounds.width - displayText - sliderBeginY, sliderHeight };
-        Rectangle boundsD = { sliderBeginY, boundsLambda.y + sliderHeight + sliderSpacing, windowBoxBounds.width - displayText - sliderBeginY, sliderHeight };
-        Rectangle boundsWinkel = { sliderBeginY, boundsD.y + sliderHeight + sliderSpacing, windowBoxBounds.width - displayText - sliderBeginY, sliderHeight };
+        Rectangle boundsLambda = { sliderBeginY, windowBoxBounds.y , windowBoxBounds.width - displayText - sliderBeginY, sliderHeight - windowBoxHeight / 3};
+        Rectangle boundsD = { sliderBeginY, boundsLambda.y + sliderHeight + sliderSpacing, windowBoxBounds.width - displayText - sliderBeginY, sliderHeight - windowBoxHeight / 3 };
+        Rectangle boundsWinkel = { sliderBeginY, boundsD.y + sliderHeight + sliderSpacing, windowBoxBounds.width - displayText - sliderBeginY, sliderHeight - windowBoxHeight / 3 };
 
 
  
@@ -363,9 +400,31 @@ int main(void) {
         boundsWinkel.y = boundsD.y + sliderHeight + sliderSpacing;
 
         //GuiSliderBar(Rectangle bounds, const char *textLeft, const char *textRight, float *value, float minValue, float maxValue); // Slider Bar control
+        /*
         GuiSlider(boundsLambda, "Lambda", TextFormat("%2.2f", valueLambda), &valueLambda, 10, 85);
         GuiSlider(boundsD, "D", TextFormat("%2.2f", valueD), &valueD, 0, 150);
         GuiSlider(boundsWinkel, "Winkel", TextFormat("%2.2f", valueWinkel), &valueWinkel, 0, 180);
+
+
+        slider(0, 50, 50, 200, &valueLambda, 10, 85);
+        slider(1, 50, 100, 200, &valueD, 0, 150);
+        slider(2, 50, 150, 200, &valueWinkel, 0, 180);
+
+        kk
+        // Slider-Aufrufe mit Rectangle-Bounds
+        slider(0, boundsLambda.x, boundsLambda.y + boundsLambda.height / 2, boundsLambda.width, &valueLambda, 10, 85);
+        slider(1, boundsD.x, boundsD.y + boundsD.height / 2, boundsD.width, &valueD, 0, 150);
+        slider(2, boundsWinkel.x, boundsWinkel.y + boundsWinkel.height / 2, boundsWinkel.width, &valueWinkel, 0, 180);
+        */
+
+        // Zeichnen Sie die Slider
+        slider(0, boundsLambda, &valueLambda, 10, 85, "Lambda");   // Slider für "Lambda"
+        slider(1, boundsD, &valueD, 0, 150, "D");                  // Slider für "D"
+        slider(2, boundsWinkel, &valueWinkel, 0, 180, "Winkel");   // Slider für "Winkel"
+
+
+
+
 
 
 
