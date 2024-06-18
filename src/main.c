@@ -38,7 +38,7 @@ static float lerpf(float min, float max, float value) {
 }
 
 
-static void slider(int id, Rectangle bounds, float *value, float min, float max, const char *label) {
+static void slider(int id, Rectangle bounds, float *value, float min, float max, const char *label, bool show, float change_value) {
     DrawRectangle(bounds.x, bounds.y + bounds.height * 0.5f - SLIDER_THICKNESS * 0.5f, bounds.width, SLIDER_THICKNESS, SLIDER_COLOR);
 
     assert(min <= max);
@@ -49,7 +49,10 @@ static void slider(int id, Rectangle bounds, float *value, float min, float max,
 
     DrawText(label, bounds.x - 100, bounds.y + bounds.height * 0.5f - 10, 20, DARKGRAY);
 
-    DrawText(TextFormat("%.2f", *value), bounds.x + bounds.width + 10, bounds.y + bounds.height * 0.5f - 10, 20, DARKGRAY);
+
+    if (show) {
+        DrawText(TextFormat("%.2f", *value - change_value), bounds.x + bounds.width + 10, bounds.y + bounds.height * 0.5f - 10, 20, DARKGRAY);
+    }
 
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         Vector2 mouse_position = GetMousePosition();
@@ -385,9 +388,9 @@ int main(void) {
         boundsD.y = boundsLambda.y + sliderHeight + sliderSpacing;
         boundsWinkel.y = boundsD.y + sliderHeight + sliderSpacing;
 
-        slider(0, boundsLambda, &valueLambda, 10, 85, "Lambda");   // Slider für "Lambda"
-        slider(1, boundsD, &valueD, 0, 150, "D");                  // Slider für "D"
-        slider(2, boundsWinkel, &valueWinkel, 0, 180, "Winkel");   // Slider für "Winkel"
+        slider(0, boundsLambda, &valueLambda, 10, 85, "Lambda", true, 0.0);   // Slider für "Lambda"
+        slider(1, boundsD, &valueD, 0, 150, "D", true, 0.0);                  // Slider für "D"
+        slider(2, boundsWinkel, &valueWinkel, 0, 180, "Winkel", true, 90.0);  // Slider für "Winkel"
 
         EndDrawing();
     }
