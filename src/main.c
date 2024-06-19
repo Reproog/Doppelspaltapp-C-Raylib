@@ -17,14 +17,15 @@ AppState state = {50, 75, 90, 1.5, 40};
 
 static int active_id = -1;
 
+
+#define FONT_SIZE 30
 #define SLIDER_COLOR DARKGRAY
 #define SLIDER_GRIP_COLOR LIGHTGRAY
 #define SLIDER_THICKNESS 20.0f
 #define SLIDER_GRIP_SIZE 10.0f
 
-#define M_PI 3.14159265358979323846  /* pi */
+#define MARGIN (FONT_SIZE * 1.0f)
 
-// Helper functions for clamping and interpolation
 static float clampf(float value, float min, float max) {
     return (value < min) ? min : (value > max) ? max : value;
 }
@@ -37,21 +38,47 @@ static float lerpf(float min, float max, float value) {
     return min + value * (max - min);
 }
 
-
 static void slider(int id, Rectangle bounds, float *value, float min, float max, const char *label, bool show, float change_value) {
-    DrawRectangle(bounds.x, bounds.y + bounds.height * 0.5f - SLIDER_THICKNESS * 0.5f, bounds.width, SLIDER_THICKNESS, SLIDER_COLOR);
+    bounds.x += MARGIN;
+    //bounds.y += MARGIN;
+    bounds.width -= 2 * MARGIN;
+
+    DrawRectangle(
+        bounds.x, 
+        bounds.y + bounds.height * 0.5f - SLIDER_THICKNESS * 0.5f, 
+        bounds.width, 
+        SLIDER_THICKNESS, 
+        SLIDER_COLOR
+    );
 
     assert(min <= max);
     float grip_value = ilerpf(min, max, *value) * bounds.width;
 
-    float grip_pos_x = bounds.x - SLIDER_GRIP_SIZE + grip_value;
-    DrawRectangle(grip_pos_x, bounds.y + bounds.height * 0.5f - SLIDER_GRIP_SIZE, SLIDER_GRIP_SIZE * 2.0f, SLIDER_GRIP_SIZE * 2.0f, SLIDER_GRIP_COLOR);
+    float grip_pos_x = bounds.x + grip_value - SLIDER_GRIP_SIZE;
+    DrawRectangle(
+        grip_pos_x, 
+        bounds.y + bounds.height * 0.5f - SLIDER_GRIP_SIZE, 
+        SLIDER_GRIP_SIZE * 2.0f, 
+        SLIDER_GRIP_SIZE * 2.0f, 
+        SLIDER_GRIP_COLOR
+    );
 
-    DrawText(label, bounds.x - 100, bounds.y + bounds.height * 0.5f - 10, 20, DARKGRAY);
-
+    DrawText(
+        label, 
+        bounds.x - MARGIN - MeasureText(label, FONT_SIZE), 
+        bounds.y + bounds.height * 0.5f - FONT_SIZE * 0.5f, 
+        FONT_SIZE, 
+        DARKGRAY
+    );
 
     if (show) {
-        DrawText(TextFormat("%.2f", *value - change_value), bounds.x + bounds.width + 10, bounds.y + bounds.height * 0.5f - 10, 20, DARKGRAY);
+        DrawText(
+            TextFormat("%.2f", *value - change_value), 
+            bounds.x + bounds.width + MARGIN, 
+            bounds.y + bounds.height * 0.5f - FONT_SIZE * 0.5f, 
+            FONT_SIZE, 
+            DARKGRAY
+        );
     }
 
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
@@ -67,9 +94,9 @@ static void slider(int id, Rectangle bounds, float *value, float min, float max,
                 active_id = id;
             }
         } else if (active_id == id) {
-            float grip_min = bounds.x - SLIDER_GRIP_SIZE;
-            float grip_max = grip_min + bounds.width;
-            float xf = clampf(mouse_position.x - SLIDER_GRIP_SIZE, grip_min, grip_max);
+            float grip_min = bounds.x;
+            float grip_max = bounds.x + bounds.width;
+            float xf = clampf(mouse_position.x, grip_min, grip_max);
             xf = ilerpf(grip_min, grip_max, xf);
             xf = lerpf(min, max, xf);
             *value = xf;
@@ -118,8 +145,8 @@ void DrawInterferencePoints(int breite, int hoehe, Color color) {
     double s0 = fmod((double) state.gitterD / 2.0 * sin(phi), state.lambda);
     int nWellen = breite / state.lambda;
     int tempR3 = 12;
-    if (state.lambda <= 20) tempR3 = 8;
-    if (state.lambda <= 15) tempR3 = 4;
+    if (state.lambda <= 20) tempR3 = 9;
+    if (state.lambda <= 15) tempR3 = 7;
 
     if (tempR3 < 5) tempR3 = 5;
 
@@ -347,6 +374,7 @@ int main(void) {
 
 
         Rectangle windowBoxBounds = {0.0f, (float)(GetScreenHeight() - windowBoxHeight), (float)GetScreenWidth(), (float)windowBoxHeight};
+        //Rectangle boundsLambda = { (float)sliderBeginY, windowBoxBounds.y, windowBoxBounds.width - (float)displayText - (float)sliderBeginY, (float)(sliderHeight - windowBoxHeight / 3)};
         Rectangle boundsLambda = { (float)sliderBeginY, windowBoxBounds.y, windowBoxBounds.width - (float)displayText - (float)sliderBeginY, (float)(sliderHeight - windowBoxHeight / 3)};
         Rectangle boundsD = { (float)sliderBeginY, boundsLambda.y + (float)sliderHeight + (float)sliderSpacing, windowBoxBounds.width - (float)displayText - (float)sliderBeginY, (float)(sliderHeight - windowBoxHeight / 3)};
         Rectangle boundsWinkel = { (float)sliderBeginY, boundsD.y + (float)sliderHeight + (float)sliderSpacing, windowBoxBounds.width - (float)displayText - (float)sliderBeginY, (float)(sliderHeight - windowBoxHeight / 3)};
