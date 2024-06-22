@@ -120,8 +120,11 @@ void DrawKugelwelle(int x, int y, int breite, int hoehe, AppState* state, Color 
     for (int i = 0; i * state->lambda + s0 < breite; i++) {
         int radius = i * state->lambda + s0;
 
+        Vector2 centerVec = {x, y};
         if (radius > 0) {
-            DrawCircleLines(x, y, radius, color);
+            DrawCircleSectorLines(centerVec, radius, -90.0f, 90.0f, 100, color);
+            //DrawCircleLines(x, y, radius, color);
+
         }
     }
 }
