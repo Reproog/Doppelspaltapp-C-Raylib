@@ -171,27 +171,6 @@ void DrawInterferencePoints(int breite, int hoehe, Color color) {
     }
 }
 
-void DrawSphericalWave(int x, int y, int width, int height) {
-    const int apertur = 90;
-    double phi = (state.winkel - 90) * PI / 180.0;
-    int s0;
-
-    if (y > height / 2) {
-        s0 = (int)((double)state.gitterD / 2.0 * sin(phi)) % state.lambda;
-    } else {
-        s0 = -(int)((double)state.gitterD / 2.0 * sin(phi)) % state.lambda;
-    }
-
-    for (int i = 0; i * state.lambda + s0 < width; i++) {
-        int circleX = x - i * state.lambda - s0;
-        int circleY = y - i * state.lambda - s0;
-        int diameter = 2 * (i * state.lambda + s0);
-
-        DrawEllipseLines(circleX, circleY, diameter, diameter, BLACK);
-    }
-}
-
-
 void DrawPlaneWave(int width, int height) {
     double dWinkel = state.winkel * PI / 180.0;
     double nX = sin(dWinkel);
