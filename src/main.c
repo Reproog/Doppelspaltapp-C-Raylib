@@ -402,6 +402,8 @@ int main(void) {
         slider(1, boundsD, &valueD, 0, 150, "D", true, 0.0);                  // Slider für "D"
         slider(2, boundsWinkel, &valueWinkel, 0, 180, "Winkel", true, 90.0);  // Slider für "Winkel"
 
+        DrawFPS(10, 10);
+
         EndDrawing();
     }
 
