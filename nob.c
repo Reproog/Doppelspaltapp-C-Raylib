@@ -8,7 +8,7 @@ int main(int argc, char **argv)
     // COMPILE WITH RAYLIB
     Nob_Cmd cmd = {0};          // SRC FILE
     
-    nob_cmd_append(&cmd, "gcc", "src/main.c", "-ggdb");
+    nob_cmd_append(&cmd, "gcc", "src/main.c", "src/Items.c", "-ggdb");
     nob_cmd_append(&cmd, "-I", "./raylib-src/raylib-5.0_linux_amd64/include/");
     nob_cmd_append(&cmd, "-L", "./raylib-src/raylib-5.0_linux_amd64/lib/", "-L", "./raylib-src/old-raygui-src/", "-l:libraylib.a", "-l:raygui.so", "-lm");
 
